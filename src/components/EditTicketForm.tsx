@@ -122,8 +122,8 @@ const EditTicketForm: React.FC<EditTicketFormProps> = ({ ticket, onSave, onCance
           inputProps={{ 'data-testid': 'edit-description' }}
         />
       </Box>
-      <Box sx={{ display: 'flex', gap: 3 }}>
-        <FormControl fullWidth size="small">
+      <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+        <FormControl fullWidth size="small" sx={{ minWidth: 120, flex: 1 }}>
           <InputLabel>Type</InputLabel>
           <Select
             name="type"
@@ -138,7 +138,7 @@ const EditTicketForm: React.FC<EditTicketFormProps> = ({ ticket, onSave, onCance
             <MenuItem value="other">Other</MenuItem>
           </Select>
         </FormControl>
-        <FormControl fullWidth size="small">
+        <FormControl fullWidth size="small" sx={{ minWidth: 120, flex: 1 }}>
           <InputLabel>Priority</InputLabel>
           <Select
             name="priority"
@@ -153,23 +153,30 @@ const EditTicketForm: React.FC<EditTicketFormProps> = ({ ticket, onSave, onCance
             <MenuItem value="urgent">Urgent</MenuItem>
           </Select>
         </FormControl>
-
-        <FormControl fullWidth size="small">
-          <InputLabel>Assign to Staff</InputLabel>
-          <Select
-            name="assignedTo"
-            value={form.assignedTo ?? ''}
-            label="Assign to Staff"
-            onChange={e => setForm(f => ({ ...f, assignedTo: e.target.value }))}
-            displayEmpty
-            inputProps={{ 'data-testid': 'edit-assignedTo' }}
-          >
-            <MenuItem value=""><em>Unassigned</em></MenuItem>
-            {staffList.map(staff => (
-              <MenuItem key={staff._id} value={staff._id} data-testid={`edit-staff-${staff._id}`}>{staff.username}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        {/* Only show assign to staff if user is staff */}
+        {currentUser?.isStaff && (
+          <FormControl fullWidth size="small" sx={{ minWidth: 120, flex: 1 }}>
+            <InputLabel shrink>Assign to Staff</InputLabel>
+            <Select
+              name="assignedTo"
+              value={form.assignedTo ?? ''}
+              label="Assign to Staff"
+              onChange={e => setForm(f => ({ ...f, assignedTo: e.target.value }))}
+              displayEmpty
+              inputProps={{ 'data-testid': 'edit-assignedTo' }}
+              renderValue={selected => {
+                if (!selected) return <em>Unassigned</em>;
+                const staff = staffList.find(s => s._id === selected);
+                return staff ? staff.username : <em>Unassigned</em>;
+              }}
+            >
+              <MenuItem value=""><em>Unassigned</em></MenuItem>
+              {staffList.map(staff => (
+                <MenuItem key={staff._id} value={staff._id} data-testid={`edit-staff-${staff._id}`}>{staff.username}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
       </Box>
       <Box>
         <Typography fontWeight={600} color="primary" mb={1}>Images</Typography>
