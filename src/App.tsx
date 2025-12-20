@@ -4,7 +4,8 @@ import StaffView from './views/StaffView';
 import type { User } from './types';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Box, AppBar, Toolbar, Avatar, Typography, Chip, Button } from '@mui/material';
+import { Box, AppBar, Toolbar, Avatar, Typography, Chip, Button, Menu, MenuItem } from '@mui/material';
+import RemoveUser from './components/RemoveUser';
 import CreateUser from './components/CreateUser';
 import LoginForm from './components/LoginForm';
 
@@ -26,6 +27,8 @@ const theme = createTheme({
 function App() {
   const [user, setUser] = React.useState<User | null>(null);
   const [showRegister, setShowRegister] = React.useState(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const menuOpen = Boolean(anchorEl);
 
   const handleLogin = async (username: string, password: string) => {
     try {
@@ -77,7 +80,16 @@ function App() {
     }
   };
 
+
   const handleLogout = () => setUser(null);
+
+  const handleRemoveUser = async (id: string) => {
+    await fetch(`/api/users/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': user?.token ? `Bearer ${user.token}` : '' },
+    });
+    setUser(null);
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -99,7 +111,30 @@ function App() {
                 <Typography variant="h6" color="primary" fontWeight={700}>IT Repair</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Typography color="text.primary" fontWeight={500} data-testid="nav-username">{user.username}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Button
+                    color="inherit"
+                    data-testid="nav-username"
+                    onClick={e => setAnchorEl(e.currentTarget)}
+                    sx={{ textTransform: 'none', fontWeight: 500 }}
+                  >
+                    {user.username}
+                  </Button>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={menuOpen}
+                    onClose={() => setAnchorEl(null)}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                  >
+                    <MenuItem disableRipple sx={{ p: 0 }}>
+                      <RemoveUser
+                        userId={user._id}
+                        onRemove={handleRemoveUser}
+                      />
+                    </MenuItem>
+                  </Menu>
+                </Box>
                 <Chip label={user.isStaff ? 'Staff' : 'Customer'} color={user.isStaff ? 'secondary' : 'primary'} variant="outlined" data-testid="nav-role" />
                 <Button onClick={handleLogout} color="error" variant="contained" data-testid="nav-logout">Log Out</Button>
               </Box>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Ticket, User } from '../types';
 import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, Avatar, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import RemoveTicket from './RemoveTicket';
 interface EditTicketFormProps {
   ticket: Ticket;
   onSave: (updated: Ticket, updatedImages: (File | null)[], removedImageIndexes: number[]) => void;
@@ -99,17 +99,9 @@ const EditTicketForm: React.FC<EditTicketFormProps> = ({ ticket, onSave, onCance
         position: 'relative',
       }}
     >
-      {typeof ticket._id === 'string' && (
+      {typeof ticket._id === 'string' && onRemove && (
         <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
-          <IconButton
-            data-testid="remove-ticket-btn"
-            color="error"
-            onClick={() => onRemove && onRemove(ticket._id)}
-            size="small"
-            aria-label="Remove Ticket"
-          >
-            <DeleteIcon />
-          </IconButton>
+          <RemoveTicket ticketId={ticket._id} onRemove={onRemove} />
         </Box>
       )}
       <Typography variant="h5" fontWeight={700} mb={2}>Edit Ticket</Typography>

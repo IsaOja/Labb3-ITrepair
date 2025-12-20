@@ -11,14 +11,16 @@ describe('RemoveUser component', () => {
 		token: '',
 	} as any;
 
+
 	it('renders a remove button', () => {
-		mount(<button data-testid="remove-user-btn">Remove</button>);
+		mount(<RemoveUser userId={user._id} onRemove={() => {}} />);
 		cy.get('[data-testid="remove-user-btn"]').should('exist').and('contain.text', 'Remove');
 	});
 
+
 	it('calls onRemove when button is clicked', () => {
 		const onRemove = cy.stub().as('onRemove');
-		mount(<button data-testid="remove-user-btn" onClick={() => onRemove(user._id)}>Remove</button>);
+		mount(<RemoveUser userId={user._id} onRemove={onRemove} />);
 		cy.get('[data-testid="remove-user-btn"]').click();
 		cy.get('@onRemove').should('have.been.calledWith', 'u1');
 	});

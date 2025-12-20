@@ -1,4 +1,6 @@
 import React from 'react';
+import { IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface RemoveTicketProps {
   ticketId: string;
@@ -6,9 +8,13 @@ interface RemoveTicketProps {
 }
 
 const RemoveTicket: React.FC<RemoveTicketProps> = ({ ticketId, onRemove }) => (
-  <button data-testid="remove-ticket-btn" onClick={() => onRemove(ticketId)}>
-    Remove
-  </button>
+  <IconButton
+    data-testid="remove-ticket-btn"
+    color="error"
+    onClick={() => onRemove(ticketId)}
+  >
+    <DeleteIcon />
+  </IconButton>
 );
 
 export default RemoveTicket;
