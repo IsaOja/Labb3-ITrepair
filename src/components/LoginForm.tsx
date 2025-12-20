@@ -27,7 +27,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onShowRegister }) => {
           <TextField
             label="Username"
             value={username}
-            inputProps={{ 'data-testid': 'login-username' }}
+            data-testid="login-username"
             onChange={e => setUsername(e.target.value)}
             required
             fullWidth
@@ -36,7 +36,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin, onShowRegister }) => {
             label="Password"
             type="password"
             value={password}
-            inputProps={{ 'data-testid': 'login-password' }}
+            data-testid="login-password"
             onChange={e => setPassword(e.target.value)}
             required
             fullWidth

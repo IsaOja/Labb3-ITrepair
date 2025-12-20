@@ -1,5 +1,6 @@
 import React from 'react';
 import { mount } from 'cypress/react';
+import RemoveTicket from '../../src/components/RemoveTicket';
 
 describe('RemoveTicket component', () => {
 	const ticket = {

@@ -23,7 +23,7 @@ const CreateTicketForm: React.FC<CreateTicketFormProps> = ({ onCreate, onCancel 
         onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
         required
         fullWidth
-        inputProps={{ 'data-testid': 'create-ticket-title-input' }}
+        data-testid="create-ticket-title-input"
       />
       <TextField
         label="Description"
@@ -34,7 +34,7 @@ const CreateTicketForm: React.FC<CreateTicketFormProps> = ({ onCreate, onCancel 
         multiline
         minRows={3}
         fullWidth
-        inputProps={{ 'data-testid': 'create-ticket-description-input' }}
+        data-testid="create-ticket-description-input"
       />
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
         <FormControl fullWidth>
@@ -44,7 +44,7 @@ const CreateTicketForm: React.FC<CreateTicketFormProps> = ({ onCreate, onCancel 
             name="type"
             value={form.type}
             onChange={e => setForm(f => ({ ...f, type: e.target.value }))}
-            inputProps={{ 'data-testid': 'create-ticket-type-select' }}
+            data-testid="create-ticket-type-select"
           >
             <MenuItem value="hardware">Hardware</MenuItem>
             <MenuItem value="software">Software</MenuItem>
@@ -59,7 +59,7 @@ const CreateTicketForm: React.FC<CreateTicketFormProps> = ({ onCreate, onCancel 
             name="priority"
             value={form.priority}
             onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}
-            inputProps={{ 'data-testid': 'create-ticket-priority-select' }}
+            data-testid="create-ticket-priority-select"
           >
             <MenuItem value="low">Low</MenuItem>
             <MenuItem value="medium">Medium</MenuItem>

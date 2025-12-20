@@ -153,7 +153,6 @@ const EditTicketForm: React.FC<EditTicketFormProps> = ({ ticket, onSave, onCance
             <MenuItem value="urgent">Urgent</MenuItem>
           </Select>
         </FormControl>
-        {/* Only show assign to staff if user is staff */}
         {currentUser?.isStaff && (
           <FormControl fullWidth size="small" sx={{ minWidth: 120, flex: 1 }}>
             <InputLabel shrink>Assign to Staff</InputLabel>

@@ -30,7 +30,7 @@ const CreateUser: React.FC<CreateUserProps> = ({ onRegister, onBack }) => {
             label="Username"
             name="username"
             value={username}
-            inputProps={{ 'data-testid': 'register-username-input' }}
+            data-testid="register-username-input"
             onChange={e => setUsername(e.target.value)}
             required
             fullWidth
@@ -40,7 +40,7 @@ const CreateUser: React.FC<CreateUserProps> = ({ onRegister, onBack }) => {
             name="email"
             type="email"
             value={email}
-            inputProps={{ 'data-testid': 'register-email-input' }}
+            data-testid="register-email-input"
             onChange={e => setEmail(e.target.value)}
             required
             fullWidth
@@ -50,7 +50,7 @@ const CreateUser: React.FC<CreateUserProps> = ({ onRegister, onBack }) => {
             name="password"
             type="password"
             value={password}
-            inputProps={{ 'data-testid': 'register-password-input' }}
+            data-testid="register-password-input"
             onChange={e => setPassword(e.target.value)}
             required
             fullWidth

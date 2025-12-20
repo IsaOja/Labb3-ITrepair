@@ -142,4 +142,18 @@ router.put('/:id', upload.array('image', 3), async (req, res) => {
   }
 });
 
+// Delete a ticket by ID
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const ticket = await Ticket.findByIdAndDelete(id);
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found' });
+    }
+    res.json({ message: 'Ticket deleted successfully' });
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to delete ticket', details: err });
+  }
+});
+
 export default router;

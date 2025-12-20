@@ -40,7 +40,7 @@ const CommentsSection: React.FC<CommentsSectionProps> = ({ comments, userName, i
         minRows={1}
         maxRows={4}
         disabled={loading}
-        inputProps={{ 'data-testid': 'customer-comment-input' }}
+        data-testid="customer-comment-input"
       />
       <Button
         variant="contained"

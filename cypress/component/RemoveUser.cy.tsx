@@ -1,5 +1,6 @@
 import React from 'react';
 import { mount } from 'cypress/react';
+import RemoveUser from '../../src/components/RemoveUser';
 
 describe('RemoveUser component', () => {
 	const user = {
