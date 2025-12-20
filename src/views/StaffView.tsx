@@ -166,6 +166,22 @@ const StaffView: React.FC<StaffViewProps> = ({ user }) => {
             setEditMode(false);
           }
         }}
+        onRemove={async (id) => {
+          if (!id) return;
+          await fetch(`/api/tickets/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${user.token}` },
+          });
+          setColumns(cols => {
+            const updated = { ...cols };
+            Object.keys(updated).forEach(status => {
+              updated[status] = updated[status].filter(t => t._id !== id);
+            });
+            return updated;
+          });
+          setSelectedTicket(null);
+          setEditMode(false);
+        }}
       />
     </Box>
   );

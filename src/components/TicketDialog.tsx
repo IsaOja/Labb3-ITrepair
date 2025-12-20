@@ -22,9 +22,10 @@ interface TicketDialogProps {
   onEdit: () => void;
   onSave: (updated: Ticket, updatedImages: (File | null)[], removedIndexes: number[]) => Promise<void>;
   onCancelEdit: () => void;
+  onRemove?: (id: string) => void;
 }
 
-const TicketDialog: React.FC<TicketDialogProps> = ({ ticket, open, user, userMap, editMode, onClose, onEdit, onSave, onCancelEdit }) => {
+const TicketDialog: React.FC<TicketDialogProps> = ({ ticket, open, user, userMap, editMode, onClose, onEdit, onSave, onCancelEdit, onRemove }) => {
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [commentInput, setCommentInput] = useState('');
@@ -71,6 +72,7 @@ const TicketDialog: React.FC<TicketDialogProps> = ({ ticket, open, user, userMap
               currentUser={user}
               onSave={onSave}
               onCancel={onCancelEdit}
+              onRemove={onRemove}
             />
           ) : (
             <Box>

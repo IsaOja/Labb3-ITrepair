@@ -14,14 +14,16 @@ describe('RemoveTicket component', () => {
 		image: null,
 	} as any;
 
+
 	it('renders a remove button', () => {
-		mount(<button data-testid="remove-ticket-btn">Remove</button>);
+		mount(<RemoveTicket ticketId={ticket._id} onRemove={() => {}} />);
 		cy.get('[data-testid="remove-ticket-btn"]').should('exist').and('contain.text', 'Remove');
 	});
 
+
 	it('calls onRemove when button is clicked', () => {
 		const onRemove = cy.stub().as('onRemove');
-		mount(<button data-testid="remove-ticket-btn" onClick={() => onRemove(ticket._id)}>Remove</button>);
+		mount(<RemoveTicket ticketId={ticket._id} onRemove={onRemove} />);
 		cy.get('[data-testid="remove-ticket-btn"]').click();
 		cy.get('@onRemove').should('have.been.calledWith', 't1');
 	});

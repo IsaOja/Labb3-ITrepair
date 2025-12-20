@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import type { Ticket, User } from '../types';
 import { Box, Typography, TextField, Button, Select, MenuItem, InputLabel, FormControl, Avatar, IconButton } from '@mui/material';
-
+import DeleteIcon from '@mui/icons-material/Delete';
 interface EditTicketFormProps {
   ticket: Ticket;
   onSave: (updated: Ticket, updatedImages: (File | null)[], removedImageIndexes: number[]) => void;
   onCancel: () => void;
+  onRemove?: (id: string) => void;
   currentUser?: User;
 }
 
-const EditTicketForm: React.FC<EditTicketFormProps> = ({ ticket, onSave, onCancel, currentUser }) => {
+const EditTicketForm: React.FC<EditTicketFormProps> = ({ ticket, onSave, onCancel, onRemove, currentUser }) => {
   const [form, setForm] = useState<{
     title: string;
     description: string;
@@ -95,8 +96,22 @@ const EditTicketForm: React.FC<EditTicketFormProps> = ({ ticket, onSave, onCance
         p: 4,
         minWidth: 340,
         maxWidth: 480,
+        position: 'relative',
       }}
     >
+      {typeof ticket._id === 'string' && (
+        <Box sx={{ position: 'absolute', top: 16, right: 16 }}>
+          <IconButton
+            data-testid="remove-ticket-btn"
+            color="error"
+            onClick={() => onRemove && onRemove(ticket._id)}
+            size="small"
+            aria-label="Remove Ticket"
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      )}
       <Typography variant="h5" fontWeight={700} mb={2}>Edit Ticket</Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
         <InputLabel sx={{ fontWeight: 600, color: 'primary.main', mb: 0.5 }}>Title</InputLabel>
@@ -106,7 +121,7 @@ const EditTicketForm: React.FC<EditTicketFormProps> = ({ ticket, onSave, onCance
           onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
           required
           size="small"
-          inputProps={{ 'data-testid': 'edit-title' }}
+          data-testid="edit-title"
         />
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
@@ -119,7 +134,7 @@ const EditTicketForm: React.FC<EditTicketFormProps> = ({ ticket, onSave, onCance
           multiline
           minRows={4}
           size="small"
-          inputProps={{ 'data-testid': 'edit-description' }}
+          data-testid="edit-description"
         />
       </Box>
       <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
@@ -130,7 +145,7 @@ const EditTicketForm: React.FC<EditTicketFormProps> = ({ ticket, onSave, onCance
             value={form.type}
             label="Type"
             onChange={e => setForm(f => ({ ...f, type: e.target.value }))}
-            inputProps={{ 'data-testid': 'edit-type' }}
+            data-testid="edit-type"
           >
             <MenuItem value="hardware">Hardware</MenuItem>
             <MenuItem value="software">Software</MenuItem>
@@ -145,7 +160,7 @@ const EditTicketForm: React.FC<EditTicketFormProps> = ({ ticket, onSave, onCance
             value={form.priority}
             label="Priority"
             onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}
-            inputProps={{ 'data-testid': 'edit-priority' }}
+            data-testid="edit-priority"
           >
             <MenuItem value="low">Low</MenuItem>
             <MenuItem value="medium">Medium</MenuItem>
@@ -162,7 +177,7 @@ const EditTicketForm: React.FC<EditTicketFormProps> = ({ ticket, onSave, onCance
               label="Assign to Staff"
               onChange={e => setForm(f => ({ ...f, assignedTo: e.target.value }))}
               displayEmpty
-              inputProps={{ 'data-testid': 'edit-assignedTo' }}
+              data-testid="edit-assignedTo"
               renderValue={selected => {
                 if (!selected) return <em>Unassigned</em>;
                 const staff = staffList.find(s => s._id === selected);

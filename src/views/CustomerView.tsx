@@ -146,6 +146,16 @@ const CustomerView: React.FC<CustomerViewProps> = ({ user }) => {
                 onCancel={() => {
                   setDialogMode('none'); setSelectedTicket(null);
                 }}
+                onRemove={async (id) => {
+                  if (!id) return;
+                  await fetch(`/api/tickets/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${user.token}` },
+                  });
+                  setTickets(tickets => tickets.filter(t => t._id !== id));
+                  setSelectedTicket(null);
+                  setDialogMode('none');
+                }}
               />
             )}
           </DialogContent>
