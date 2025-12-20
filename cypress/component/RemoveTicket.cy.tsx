@@ -15,9 +15,10 @@ describe('RemoveTicket component', () => {
 	} as any;
 
 
-	it('renders a remove button', () => {
+	it('renders a remove icon button', () => {
 		mount(<RemoveTicket ticketId={ticket._id} onRemove={() => {}} />);
-		cy.get('[data-testid="remove-ticket-btn"]').should('exist').and('contain.text', 'Remove');
+		cy.get('[data-testid="remove-ticket-btn"]').should('exist');
+		cy.get('[data-testid="remove-ticket-btn"]').find('svg').should('exist');
 	});
 
 

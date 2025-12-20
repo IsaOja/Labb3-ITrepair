@@ -74,9 +74,9 @@ const TicketDetailsDialog: React.FC<TicketDetailsDialogProps> = ({
               onSend={onSendComment}
             />
             {ticket.status === 'created' && (
-              <Button variant="contained" color="primary" sx={{ mt: 2, fontWeight: 600 }} onClick={onEdit}>Edit</Button>
+              <Button variant="contained" color="primary" sx={{ mt: 2, fontWeight: 600 }} onClick={onEdit} data-testid="editTicketForm-edit-btn">Edit</Button>
             )}
-            <Button variant="outlined" color="secondary" sx={{ mt: 2, fontWeight: 600, ml: 2 }} onClick={onClose}>Close</Button>
+            <Button variant="outlined" color="secondary" sx={{ mt: 2, fontWeight: 600, ml: 2 }} onClick={onClose} data-testid="editTicketForm-close-btn">Close</Button>
           </Box>
         )}
       </DialogContent>

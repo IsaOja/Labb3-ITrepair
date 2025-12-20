@@ -12,9 +12,10 @@ describe('RemoveUser component', () => {
 	} as any;
 
 
-	it('renders a remove button', () => {
+	it('renders a remove icon button', () => {
 		mount(<RemoveUser userId={user._id} onRemove={() => {}} />);
-		cy.get('[data-testid="remove-user-btn"]').should('exist').and('contain.text', 'Remove');
+		cy.get('[data-testid="remove-user-btn"]').should('exist');
+		cy.get('[data-testid="remove-user-btn"]').find('svg').should('exist');
 	});
 
 
