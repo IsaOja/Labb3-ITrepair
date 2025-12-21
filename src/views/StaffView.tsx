@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import type { DragEndEvent } from '@dnd-kit/core';
 import KanbanBoard from '../components/KanbanBoard';
 import TicketDialog from '../components/TicketDialog';
 import type { Ticket, User } from '../types';
@@ -33,7 +34,9 @@ const StaffView: React.FC<StaffViewProps> = ({ user }) => {
             const u = await res.json();
             if (u && u._id) map[u._id] = u;
           }
-        } catch {}
+        } catch {
+          // Ignore errors
+        }
       }));
       setUserMap(map);
     };
@@ -41,7 +44,6 @@ const StaffView: React.FC<StaffViewProps> = ({ user }) => {
   }, [columns, user.token]);
 
   useEffect(() => {
-    setLoading(true);
     fetch('/api/tickets', {
       headers: {
         'Authorization': `Bearer ${user.token}`,
@@ -66,11 +68,11 @@ const StaffView: React.FC<StaffViewProps> = ({ user }) => {
         setError('Failed to fetch tickets');
         setLoading(false);
       });
-  }, [refresh]);
+  }, [refresh, user.token]);
 
 
 
-  const handleDragEnd = async (event: any) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || !active) return;
     const ticketId = active.id as string;
@@ -116,6 +118,36 @@ const StaffView: React.FC<StaffViewProps> = ({ user }) => {
     }
   };
 
+  const handleTicketStatusChange = async (ticketId: string, destStatus: string) => {
+    const sourceStatus = Object.keys(columns).find(status => columns[status].some(t => t._id === ticketId));
+    if (!sourceStatus || sourceStatus === destStatus) return;
+    setColumns(prev => {
+      const movedTicket = prev[sourceStatus].find(t => t._id === ticketId);
+      if (!movedTicket) return prev;
+      const updatedTicket = { ...movedTicket, status: destStatus };
+      const newSource = prev[sourceStatus].filter(t => t._id !== ticketId);
+      const newDest = [...prev[destStatus], updatedTicket];
+      return {
+        ...prev,
+        [sourceStatus]: newSource,
+        [destStatus]: newDest,
+      };
+    });
+    try {
+      const formData = new FormData();
+      formData.append('status', destStatus);
+      await fetch(`/api/tickets/${ticketId}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${user.token}` },
+        body: formData,
+      });
+      setRefresh(r => r + 1);
+    } catch {
+      alert('Failed to update ticket status');
+      setRefresh(r => r + 1);
+    }
+  };
+
   return (
     <Box>
       <Typography data-testid="staff-board-title" variant="h4" fontWeight={700} mb={3}>All Tickets (Kanban Board)</Typography>
@@ -134,6 +166,7 @@ const StaffView: React.FC<StaffViewProps> = ({ user }) => {
         open={!!selectedTicket}
         user={user}
         userMap={userMap}
+        onStatusChange={handleTicketStatusChange}
         editMode={editMode}
         onClose={() => { setSelectedTicket(null); setEditMode(false); }}
         onEdit={() => setEditMode(true)}

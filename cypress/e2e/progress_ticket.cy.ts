@@ -19,38 +19,30 @@ describe('IT Repair app - progress ticket', () => {
     cy.contains(`Progress Test Ticket ${ts}`).should('exist');
     cy.get('[data-testid="nav-logout"]').click();
 
-    // Staff logs in and we'll progress the ticket via API updates (more reliable than simulated drag)
-    cy.intercept('POST', '/api/users/login').as('staffLogin');
+    // Staff logs in to progress the ticket
+    cy.visit('/');
     cy.get('[data-testid="login-username"]').type(staff.username);
     cy.get('[data-testid="login-password"]').type(staff.password);
     cy.get('[data-testid="login-submit"]').click();
-    cy.wait('@staffLogin').its('response.body.token').then((token) => {
-      expect(token).to.be.a('string');
-      // find the ticket via API
-      cy.request({ method: 'GET', url: '/api/tickets', headers: { Authorization: `Bearer ${token}` } }).then((res) => {
-        const tickets = res.body as any[];
-        const ticket = tickets.find(t => t.title === `Progress Test Ticket ${ts}`);
-        expect(ticket, 'created ticket exists').to.exist;
-        const ticketId = ticket._id;
+    cy.get('[data-testid="staff-board-title"]').should('exist');
 
-        const statuses = ['in progress', 'closed'];
-        cy.wrap(statuses).each((status) => {
-          // update status via API
-          cy.request({
-            method: 'PUT',
-            url: `/api/tickets/${ticketId}`,
-            headers: { Authorization: `Bearer ${token}` },
-            body: { status },
-          }).then(() => {
-            // reload UI so frontend fetches updated tickets and assert it's in the target column
-            cy.reload();
-            cy.get('[data-testid="login-username"]').type(staff.username);
-            cy.get('[data-testid="login-password"]').type(staff.password);
-            cy.get('[data-testid="login-submit"]').click(); 
-            cy.get(`[data-testid="column-${String(status)}"]`).contains(`Progress Test Ticket ${ts}`).should('exist');
-          });
-        });
-      });
-    });
+    // Change status to "in progress"
+    cy.contains(`Progress Test Ticket ${ts}`).click();
+    cy.get('[data-testid="staff-popup-title"]').should('have.text', `Progress Test Ticket ${ts}`);
+    cy.get('[data-testid="ticket-status-select"]').parent().click();
+    cy.get('li[data-value="in progress"]').click();
+    cy.get('[data-testid="ticket-status-select"]').should('contain.text', 'In progress');
+    cy.get('[data-testid="staff-popup-close"]').click();
+
+    // Change status to "closed"
+    cy.contains(`Progress Test Ticket ${ts}`).click();
+    cy.get('[data-testid="ticket-status-select"]').parent().click();
+    cy.get('li[data-value="closed"]').click();
+    cy.get('[data-testid="ticket-status-select"]').should('contain.text', 'Closed');
+    cy.get('[data-testid="staff-popup-close"]').click();
+
+    cy.get('[data-testid="nav-logout"]').click();
+
+    
   });
 });

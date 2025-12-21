@@ -20,6 +20,7 @@ describe('IT Repair app - Edit ticket (customer)', () => {
     cy.get('[data-testid="edit-title"]').clear().type('Edited Title');
     cy.get('[data-testid="editTicketForm-submit"]').click();
     cy.contains('Edited Title').should('exist');
+    cy.get('[data-testid="CloseIcon"]').click();
     cy.get('[data-testid="nav-logout"]').click();
   });
 });

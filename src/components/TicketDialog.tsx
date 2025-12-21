@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, Box, Stack, Typography, Button, IconButton, Avatar, Chip } from '@mui/material';
+import { Dialog, DialogContent, Box, Stack, Typography, Button, IconButton, Avatar, Chip, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import type { Ticket, User } from '../types';
 import EditTicketForm from './EditTicketForm';
@@ -23,15 +23,18 @@ interface TicketDialogProps {
   onSave: (updated: Ticket, updatedImages: (File | null)[], removedIndexes: number[]) => Promise<void>;
   onCancelEdit: () => void;
   onRemove?: (id: string) => void;
+  onStatusChange?: (id: string, status: string) => void;
 }
 
-const TicketDialog: React.FC<TicketDialogProps> = ({ ticket, open, user, userMap, editMode, onClose, onEdit, onSave, onCancelEdit, onRemove }) => {
+const TicketDialog: React.FC<TicketDialogProps> = ({ ticket, open, user, userMap, editMode, onClose, onEdit, onSave, onCancelEdit, onRemove, onStatusChange }) => {
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
+  const [localStatus, setLocalStatus] = useState<string>(ticket?.status ?? 'created');
   const [commentInput, setCommentInput] = useState('');
   const [commentLoading, setCommentLoading] = useState(false);
 
   useEffect(() => {
+    setLocalStatus(ticket?.status ?? 'created');
     if (editMode || !ticket) {
       setComments([]);
       return;
@@ -59,6 +62,28 @@ const TicketDialog: React.FC<TicketDialogProps> = ({ ticket, open, user, userMap
 
   if (!ticket) return null;
 
+  const handleStatusChange = async (event: any) => {
+    const newStatus = event.target.value as string;
+    setLocalStatus(newStatus);
+    try {
+      const formData = new FormData();
+      formData.append('status', newStatus);
+      const res = await fetch(`/api/tickets/${ticket._id}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${user.token}` },
+        body: formData,
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        if (onStatusChange) onStatusChange(ticket._id, newStatus);
+      } else {
+        alert('Failed to update ticket status');
+      }
+    } catch (err) {
+      alert('Failed to update ticket status');
+    }
+  };
+
   return (
     <>
       <Dialog data-testid="staff-ticket-dialog" open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -78,11 +103,25 @@ const TicketDialog: React.FC<TicketDialogProps> = ({ ticket, open, user, userMap
             <Box>
               <Stack direction="row" alignItems="center" spacing={2} mb={3}>
                 <Chip
-                  label={ticket.status.replace(/\b\w/g, l => l.toUpperCase())}
-                  color={ticket.status === 'created' ? 'primary' : ticket.status === 'in progress' ? 'warning' : 'success'}
+                  label={(localStatus || ticket.status).replace(/\b\w/g, l => l.toUpperCase())}
+                  color={(localStatus || ticket.status) === 'created' ? 'primary' : (localStatus || ticket.status) === 'in progress' ? 'warning' : 'success'}
                   variant="outlined"
                   sx={{ fontWeight: 600, fontSize: 14, px: 2, py: 0.5 }}
                 />
+                <FormControl size="small" sx={{ minWidth: 160 }}>
+                  <InputLabel data-testid="ticket-status-label">Status</InputLabel>
+                  <Select
+                    labelId="ticket-status-label"
+                    value={localStatus}
+                    label="Status"
+                    data-testid="ticket-status-select"
+                    onChange={handleStatusChange}
+                  >
+                    <MenuItem value="created">Created</MenuItem>
+                    <MenuItem value="in progress">In progress</MenuItem>
+                    <MenuItem value="closed">Closed</MenuItem>
+                  </Select>
+                </FormControl>
                 <Typography data-testid="staff-popup-title" variant="h5" fontWeight={700} sx={{ textTransform: 'capitalize' }}>{ticket.title}</Typography>
               </Stack>
               <Typography color="text.secondary" mb={3} sx={{ borderBottom: '1px solid #eee', pb: 2 }}><b>Description:</b> {ticket.description}</Typography>
